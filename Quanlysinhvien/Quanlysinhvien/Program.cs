@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace LoginForm
+namespace Quanlysinhvien
 {
     internal static class Program
     {
@@ -16,7 +16,7 @@ namespace LoginForm
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-			Application.Run(new QLSV());
-		}
+            Application.Run(new Form1());
+        }
     }
 }
