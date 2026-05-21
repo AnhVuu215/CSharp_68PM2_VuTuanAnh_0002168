@@ -10,31 +10,32 @@ using System.Windows.Forms;
 
 namespace LoginForm
 {
-    public partial class QLLH : Form
-    {
-        public QLLH()
-        {
-            InitializeComponent();
-        }
+	public partial class QLLH : Form
+	{
+		public QLLH()
+		{
+			InitializeComponent();
+		}
 
-        private void label8_Click(object sender, EventArgs e)
-        {
+		private void label8_Click(object sender, EventArgs e)
+		{
 
-        }
+		}
 
-        private void QLLH_Load(object sender, EventArgs e)
-        {
+		private void QLLH_Load(object sender, EventArgs e)
+		{
 
-        }
+		}
 
-        private void label2_Click(object sender, EventArgs e)
-        {
+		private void label2_Click(object sender, EventArgs e)
+		{
 
-        }
+		}
 
-        private void label1_Click(object sender, EventArgs e)
-        {
+		private void label1_Click(object sender, EventArgs e)
+		{
 
-        }
-    }
+		}
+		
+	}
 }
