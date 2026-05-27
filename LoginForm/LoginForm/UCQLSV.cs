@@ -15,6 +15,137 @@ namespace LoginForm
         public UCQLSV()
         {
             InitializeComponent();
+            // ensure the click handler is attached at runtime
+            this.button1.Click -= this.button1_Click;
+            this.button1.Click += this.button1_Click;
+            // Load existing students from database
+            LoadStudents();
+        }
+
+        private void LoadStudents()
+        {
+            try
+            {
+                string conn = DatabaseHelper.DefaultConnectionString;
+                using (var db = new DataClasses1DataContext(conn))
+                {
+                    dataGridView1.Rows.Clear();
+                    foreach (var s in db.Students)
+                    {
+                        string ngay = s.NgaySinh.HasValue ? s.NgaySinh.Value.ToString("dd/MM/yyyy") : string.Empty;
+                        dataGridView1.Rows.Add(s.MaSV, s.HoTen, s.GioiTinh, ngay, s.Lop);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // Non-fatal: show message and continue
+                MessageBox.Show("Không thể load dữ liệu sinh viên: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            // Thêm sinh viên từ user control
+            string maSv = txtMaSV.Text.Trim();
+            string hoTen = textBox2.Text.Trim();
+            string gioiTinh = comboBox1.SelectedItem != null ? comboBox1.SelectedItem.ToString() : comboBox1.Text.Trim();
+            string lop = comboBox2.SelectedItem != null ? comboBox2.SelectedItem.ToString() : comboBox2.Text.Trim();
+            string ngaySinh = dateTimePicker1.Value.ToString("dd/MM/yyyy");
+
+            if (string.IsNullOrEmpty(maSv))
+            {
+                MessageBox.Show("Vui lòng nhập Mã sinh viên.", "Thiếu dữ liệu", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                txtMaSV.Focus();
+                return;
+            }
+
+            if (string.IsNullOrEmpty(hoTen))
+            {
+                MessageBox.Show("Vui lòng nhập Họ và tên.", "Thiếu dữ liệu", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                textBox2.Focus();
+                return;
+            }
+
+            if (string.IsNullOrEmpty(gioiTinh))
+            {
+                MessageBox.Show("Vui lòng chọn hoặc nhập Giới tính.", "Thiếu dữ liệu", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                comboBox1.Focus();
+                return;
+            }
+
+            if (string.IsNullOrEmpty(lop))
+            {
+                MessageBox.Show("Vui lòng chọn hoặc nhập Lớp.", "Thiếu dữ liệu", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                comboBox2.Focus();
+                return;
+            }
+
+            // Check duplicate Mã SV in current grid
+            foreach (DataGridViewRow r in dataGridView1.Rows)
+            {
+                if (r.IsNewRow) continue;
+                var existing = r.Cells[0].Value?.ToString();
+                if (!string.IsNullOrEmpty(existing) && string.Equals(existing, maSv, StringComparison.OrdinalIgnoreCase))
+                {
+                    MessageBox.Show("Mã sinh viên đã tồn tại.", "Trùng dữ liệu", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    txtMaSV.Focus();
+                    return;
+                }
+            }
+
+            try
+            {
+                // disable user-added blank row to avoid confusion
+                dataGridView1.AllowUserToAddRows = false;
+                dataGridView1.Rows.Add(maSv, hoTen, gioiTinh, ngaySinh, lop);
+
+                // Clear inputs
+            txtMaSV.Clear();
+            textBox2.Clear();
+            comboBox1.SelectedIndex = -1;
+            comboBox1.Text = string.Empty;
+            comboBox2.SelectedIndex = -1;
+            comboBox2.Text = string.Empty;
+            dateTimePicker1.Value = DateTime.Today;
+                // focus the newly added row
+                if (dataGridView1.Rows.Count > 0)
+                {
+                    int index = dataGridView1.Rows.Count - 1;
+                    dataGridView1.ClearSelection();
+                    dataGridView1.Rows[index].Selected = true;
+                    dataGridView1.FirstDisplayedScrollingRowIndex = index;
+                }
+
+                MessageBox.Show("Thêm sinh viên thành công.", "Thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                // Save to database via LINQ-to-SQL using configured connection
+                try
+                {
+                    string conn = DatabaseHelper.DefaultConnectionString;
+                    using (var db = new DataClasses1DataContext(conn))
+                    {
+                        var s = new Student
+                        {
+                            MaSV = maSv,
+                            HoTen = hoTen,
+                            GioiTinh = gioiTinh,
+                            NgaySinh = dateTimePicker1.Value.Date,
+                            Lop = lop
+                        };
+                        db.Students.InsertOnSubmit(s);
+                        db.SubmitChanges();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Lưu vào CSDL thất bại: " + ex.Message, "Lỗi lưu", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Lỗi khi thêm sinh viên: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
     }
 }

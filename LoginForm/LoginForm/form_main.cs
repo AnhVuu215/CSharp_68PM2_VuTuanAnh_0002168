@@ -21,7 +21,9 @@ namespace LoginForm
         {
             UCQLSV uCQLSV = new UCQLSV();
             mainPanel.Controls.Clear();
+            uCQLSV.Dock = DockStyle.Fill;
             mainPanel.Controls.Add(uCQLSV);
+            uCQLSV.BringToFront();
 
         }
 
@@ -29,7 +31,9 @@ namespace LoginForm
         {
             UCQLLH uCQLLH = new UCQLLH();
             mainPanel.Controls.Clear();
+            uCQLLH.Dock = DockStyle.Fill;
             mainPanel.Controls.Add(uCQLLH);
+            uCQLLH.BringToFront();
         }
     }
 }

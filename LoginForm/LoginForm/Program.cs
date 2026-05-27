@@ -11,12 +11,24 @@ namespace LoginForm
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
-        //[STAThread]
+        [STAThread]
         static void Main()
         {
-            //Application.EnableVisualStyles();
-            //Application.SetCompatibleTextRenderingDefault(false);
-			Application.Run(new form_main());
-		}
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+
+            // Ensure database and tables exist before running
+            try
+            {
+                LoginForm.DatabaseHelper.EnsureDatabaseAndTables();
+            }
+            catch
+            {
+                // ignore errors here; UI will show DB errors when saving
+            }
+
+            // Start main form directly
+            Application.Run(new form_main());
+        }
     }
 }

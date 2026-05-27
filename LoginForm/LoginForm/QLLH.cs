@@ -37,5 +37,45 @@ namespace LoginForm
 
 		}
 		
+		private void btnThem_Click(object sender, EventArgs e)
+		{
+			// "Thêm" button for lớp học
+			string maId = txtMaID.Text.Trim();
+			string maLop = txtMaLop.Text.Trim();
+			string tenLop = txtTenLop.Text.Trim();
+			string ghiChu = txtGhiChu.Text.Trim();
+
+			if (string.IsNullOrEmpty(maId))
+			{
+				MessageBox.Show("Vui lòng nhập Mã ID.", "Thiếu dữ liệu", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+				txtMaID.Focus();
+				return;
+			}
+
+			if (string.IsNullOrEmpty(maLop))
+			{
+				MessageBox.Show("Vui lòng nhập Mã lớp.", "Thiếu dữ liệu", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+				txtMaLop.Focus();
+				return;
+			}
+
+			if (string.IsNullOrEmpty(tenLop))
+			{
+				MessageBox.Show("Vui lòng nhập Tên lớp.", "Thiếu dữ liệu", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+				txtTenLop.Focus();
+				return;
+			}
+
+			// Add new row to DataGridView
+			dgvDanhSach.Rows.Add(maId, maLop, "-", "-", tenLop);
+
+			// Clear inputs
+			txtMaID.Clear();
+			txtMaLop.Clear();
+			txtTenLop.Clear();
+			txtGhiChu.Clear();
+
+			MessageBox.Show("Thêm lớp học thành công.", "Thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
+		}
 	}
 }
