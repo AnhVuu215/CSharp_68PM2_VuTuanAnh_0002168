@@ -18,6 +18,9 @@ namespace LoginForm
             // ensure the click handler is attached at runtime
             this.button1.Click -= this.button1_Click;
             this.button1.Click += this.button1_Click;
+            // attach DataGridView cell click handler to populate fields for edit/delete
+            this.dataGridView1.CellClick -= this.dataGridView1_CellClick;
+            this.dataGridView1.CellClick += this.dataGridView1_CellClick;
             // Load existing students from database
             LoadStudents();
         }
@@ -36,6 +39,46 @@ namespace LoginForm
                         dataGridView1.Rows.Add(s.MaSV, s.HoTen, s.GioiTinh, ngay, s.Lop);
                     }
                 }
+
+        // Populate form fields when a row in the grid is clicked
+        private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            try
+            {
+                if (e.RowIndex < 0) return; // header
+                var row = dataGridView1.Rows[e.RowIndex];
+                if (row == null || row.IsNewRow) return;
+
+                // Fill inputs from the selected row cells
+                txtMaSV.Text = row.Cells[0].Value?.ToString() ?? string.Empty;
+                textBox2.Text = row.Cells[1].Value?.ToString() ?? string.Empty;
+                comboBox1.Text = row.Cells[2].Value?.ToString() ?? string.Empty;
+
+                // Parse date in format dd/MM/yyyy if possible
+                var dateText = row.Cells[3].Value?.ToString();
+                DateTime dt;
+                if (!string.IsNullOrEmpty(dateText) && DateTime.TryParseExact(dateText, "dd/MM/yyyy", System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out dt))
+                {
+                    dateTimePicker1.Value = dt;
+                }
+                else
+                {
+                    // fallback: try general parse
+                    if (DateTime.TryParse(dateText, out dt))
+                        dateTimePicker1.Value = dt;
+                }
+
+                comboBox2.Text = row.Cells[4].Value?.ToString() ?? string.Empty;
+
+                // Highlight the selected row
+                dataGridView1.ClearSelection();
+                row.Selected = true;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Lỗi khi chọn dòng: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
             }
             catch (Exception ex)
             {

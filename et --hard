@@ -1,0 +1,27 @@
+[33m1c0a042[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m HEAD@{0}: reset: moving to 1c0a042
+[33m7987f2c[m HEAD@{1}: checkout: moving from da7a9cf6b3be8d12dd37f1ca72beb44a992c3a53 to main
+[33mda7a9cf[m HEAD@{2}: commit: feat<sinhvien>: SearchPaging
+[33m95c5657[m HEAD@{3}: reset: moving to 95c5657f260c8b60018bc75c4a86ac63263651dd
+[33m2f928a0[m HEAD@{4}: commit: feat<lophoc>: CRUD lophoc
+[33m9b95db5[m HEAD@{5}: reset: moving to 9b95db50ce425a3342f937226b3d56124490c5ed
+[33m1c0a042[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m HEAD@{6}: reset: moving to 1c0a042410a792b3d1791b33477e8f340efc120f
+[33m9c0287b[m HEAD@{7}: revert: Revert "Rename folder"
+[33md01e418[m HEAD@{8}: checkout: moving from main to d01e418647854ee8c223c0fd0f11386e9d53c3e7
+[33m7987f2c[m HEAD@{9}: pull --ff --recurse-submodules --progress origin: Merge made by the 'ort' strategy.
+[33m43b6e2c[m HEAD@{10}: commit: Update LoginForm.slnx
+[33md01e418[m HEAD@{11}: commit: Rename folder
+[33m1c0a042[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m HEAD@{12}: commit: feat<lophoc>: view list sinhvien
+[33m9b95db5[m HEAD@{13}: commit: feat<lophoc>: CRUD lophoc
+[33m95c5657[m HEAD@{14}: commit: feat<sinhvien>: SearchPaging
+[33m156872a[m HEAD@{15}: commit: feat<sinhvien>: Delele
+[33m1b1c124[m HEAD@{16}: commit: feat<sinhvien>: Update
+[33m345e82b[m HEAD@{17}: commit: feat<sinhvien>: DataGridView CellClickEvent
+[33mb315695[m HEAD@{18}: commit: feat<sinhvien>: DataGridView CellClickEvent
+[33m0a02ed0[m HEAD@{19}: commit: done chưc năng "Thêm"
+[33m7624162[m HEAD@{20}: commit: feat add UserControl + MenuStrip
+[33mb34108a[m HEAD@{21}: revert: Reapply "Hoan thanh giao dien QLSV va tao moi form Quan ly Lop hoc"
+[33m1e3e075[m HEAD@{22}: revert: Revert "Hoan thanh giao dien QLSV va tao moi form Quan ly Lop hoc"
+[33mb211dd3[m HEAD@{23}: commit: Hoan thanh giao dien QLSV va tao moi form Quan ly Lop hoc
+[33m705fcd3[m HEAD@{24}: commit: Chức năng đăng nhập
+[33mc11d749[m HEAD@{25}: commit: Khoi tao prj Login Form
+[33m8c540d4[m HEAD@{26}: commit (initial): Initial commit
