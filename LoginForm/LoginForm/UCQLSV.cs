@@ -12,6 +12,9 @@ namespace LoginForm
 {
     public partial class UCQLSV : UserControl
     {
+        // currently selected student MaSV from grid (used for updates)
+        private string selectedMaSV = null;
+
         public UCQLSV()
         {
             InitializeComponent();
@@ -21,6 +24,9 @@ namespace LoginForm
             // attach DataGridView cell click handler to populate fields for edit/delete
             this.dataGridView1.CellClick -= this.dataGridView1_CellClick;
             this.dataGridView1.CellClick += this.dataGridView1_CellClick;
+            // attach update button
+            this.button2.Click -= this.button2_Click;
+            this.button2.Click += this.button2_Click;
             // Load existing students from database
             LoadStudents();
         }
@@ -39,6 +45,13 @@ namespace LoginForm
                         dataGridView1.Rows.Add(s.MaSV, s.HoTen, s.GioiTinh, ngay, s.Lop);
                     }
                 }
+            }
+            catch (Exception ex)
+            {
+                // Non-fatal: show message and continue
+                MessageBox.Show("Không thể load dữ liệu sinh viên: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
 
         // Populate form fields when a row in the grid is clicked
         private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
@@ -49,8 +62,11 @@ namespace LoginForm
                 var row = dataGridView1.Rows[e.RowIndex];
                 if (row == null || row.IsNewRow) return;
 
+                // remember original MaSV for update lookup
+                selectedMaSV = row.Cells[0].Value?.ToString();
+
                 // Fill inputs from the selected row cells
-                txtMaSV.Text = row.Cells[0].Value?.ToString() ?? string.Empty;
+                txtMaSV.Text = selectedMaSV ?? string.Empty;
                 textBox2.Text = row.Cells[1].Value?.ToString() ?? string.Empty;
                 comboBox1.Text = row.Cells[2].Value?.ToString() ?? string.Empty;
 
@@ -77,13 +93,6 @@ namespace LoginForm
             catch (Exception ex)
             {
                 MessageBox.Show("Lỗi khi chọn dòng: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            }
-        }
-            }
-            catch (Exception ex)
-            {
-                // Non-fatal: show message and continue
-                MessageBox.Show("Không thể load dữ liệu sinh viên: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
 
@@ -188,6 +197,59 @@ namespace LoginForm
             catch (Exception ex)
             {
                 MessageBox.Show("Lỗi khi thêm sinh viên: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        // Update selected student
+        private void button2_Click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrEmpty(selectedMaSV))
+            {
+                MessageBox.Show("Vui lòng chọn sinh viên cần sửa từ bảng.", "Chưa chọn", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            string maSv = txtMaSV.Text.Trim();
+            string hoTen = textBox2.Text.Trim();
+            string gioiTinh = comboBox1.SelectedItem != null ? comboBox1.SelectedItem.ToString() : comboBox1.Text.Trim();
+            string lop = comboBox2.SelectedItem != null ? comboBox2.SelectedItem.ToString() : comboBox2.Text.Trim();
+
+            if (string.IsNullOrEmpty(maSv) || string.IsNullOrEmpty(hoTen))
+            {
+                MessageBox.Show("Mã SV và Họ tên không được để trống.", "Thiếu dữ liệu", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            try
+            {
+                string conn = DatabaseHelper.DefaultConnectionString;
+                using (var db = new DataClasses1DataContext(conn))
+                {
+                    var existing = db.Students.FirstOrDefault(x => x.MaSV == selectedMaSV);
+                    if (existing == null)
+                    {
+                        MessageBox.Show("Không tìm thấy sinh viên trong CSDL.", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+
+                    // update fields
+                    existing.MaSV = maSv;
+                    existing.HoTen = hoTen;
+                    existing.GioiTinh = gioiTinh;
+                    existing.NgaySinh = dateTimePicker1.Value.Date;
+                    existing.Lop = lop;
+
+                    db.SubmitChanges();
+                }
+
+                // Refresh grid
+                LoadStudents();
+                MessageBox.Show("Cập nhật sinh viên thành công.", "Thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                selectedMaSV = null;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Lỗi khi cập nhật: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
     }
