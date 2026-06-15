@@ -65,6 +65,9 @@
     <Compile Include="form_main.Designer.cs">
       <DependentUpon>form_main.cs</DependentUpon>
     </Compile>
+    <Compile Include="LoginForm\FormDanhSachSV.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Models.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -323,27 +323,10 @@ namespace LoginForm
                     }
 
                     var students = db.Students.Where(s => s.Lop == cls.MaLop).ToList();
-
-                    // show simple dialog with students
-                    var frm = new Form();
-                    frm.Text = $"Danh sách sinh viên - {cls.TenLop} ({cls.MaLop})";
-                    frm.Size = new Size(800, 600);
-                    var dgv = new DataGridView { Dock = DockStyle.Fill, ReadOnly = true, AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill };
-                    dgv.Columns.Add("MaSV", "Mã SV");
-                    dgv.Columns.Add("HoTen", "Họ và tên");
-                    dgv.Columns.Add("GioiTinh", "Giới tính");
-                    dgv.Columns.Add("NgaySinh", "Ngày sinh");
-                    dgv.Columns.Add("Lop", "Lớp");
-
-                    foreach (var s in students)
+                    using (var frm = new FormDanhSachSV(students, $"Danh sách sinh viên - {cls.TenLop} ({cls.MaLop})"))
                     {
-                        string ngay = s.NgaySinh.HasValue ? s.NgaySinh.Value.ToString("dd/MM/yyyy") : string.Empty;
-                        dgv.Rows.Add(s.MaSV, s.HoTen, s.GioiTinh, ngay, s.Lop);
+                        frm.ShowDialog();
                     }
-
-                    frm.Controls.Add(dgv);
-                    frm.StartPosition = FormStartPosition.CenterParent;
-                    frm.ShowDialog();
                 }
             }
             catch (Exception ex)
