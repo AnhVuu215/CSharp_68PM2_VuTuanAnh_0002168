@@ -27,8 +27,58 @@ namespace LoginForm
             // attach update button
             this.button2.Click -= this.button2_Click;
             this.button2.Click += this.button2_Click;
+            // attach delete button
+            this.button3.Click -= this.button3_Click;
+            this.button3.Click += this.button3_Click;
             // Load existing students from database
             LoadStudents();
+        }
+
+        // Delete selected student
+        private void button3_Click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrEmpty(selectedMaSV))
+            {
+                MessageBox.Show("Vui lòng chọn sinh viên cần xóa từ bảng.", "Chưa chọn", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            var confirm = MessageBox.Show($"Bạn có chắc muốn xóa sinh viên '{selectedMaSV}'?", "Xác nhận", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            if (confirm != DialogResult.Yes) return;
+
+            try
+            {
+                string conn = DatabaseHelper.DefaultConnectionString;
+                using (var db = new DataClasses1DataContext(conn))
+                {
+                    var existing = db.Students.FirstOrDefault(x => x.MaSV == selectedMaSV);
+                    if (existing == null)
+                    {
+                        MessageBox.Show("Không tìm thấy sinh viên trong CSDL.", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+
+                    db.Students.DeleteOnSubmit(existing);
+                    db.SubmitChanges();
+                }
+
+                // Refresh grid and clear inputs
+                LoadStudents();
+                txtMaSV.Clear();
+                textBox2.Clear();
+                comboBox1.SelectedIndex = -1;
+                comboBox1.Text = string.Empty;
+                comboBox2.SelectedIndex = -1;
+                comboBox2.Text = string.Empty;
+                dateTimePicker1.Value = DateTime.Today;
+
+                MessageBox.Show("Xóa sinh viên thành công.", "Thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                selectedMaSV = null;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Lỗi khi xóa: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void LoadStudents()
