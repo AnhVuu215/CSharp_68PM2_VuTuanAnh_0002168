@@ -14,6 +14,12 @@ namespace LoginForm
     {
         // currently selected student MaSV from grid (used for updates)
         private string selectedMaSV = null;
+        // paging/search state
+        private int currentPage = 1;
+        private int pageSize = 10;
+        private int totalRecords = 0;
+        private int totalPages = 1;
+        private string lastSearchText = string.Empty;
 
         public UCQLSV()
         {
@@ -30,6 +36,17 @@ namespace LoginForm
             // attach delete button
             this.button3.Click -= this.button3_Click;
             this.button3.Click += this.button3_Click;
+            // attach search and paging handlers
+            this.button5.Click -= this.button5_Click;
+            this.button5.Click += this.button5_Click;
+            this.button6.Click -= this.button6_Click; // <<
+            this.button6.Click += this.button6_Click;
+            this.button7.Click -= this.button7_Click; // <
+            this.button7.Click += this.button7_Click;
+            this.button8.Click -= this.button8_Click; // >
+            this.button8.Click += this.button8_Click;
+            this.button9.Click -= this.button9_Click; // >>
+            this.button9.Click += this.button9_Click;
             // Load existing students from database
             LoadStudents();
         }
@@ -81,26 +98,106 @@ namespace LoginForm
             }
         }
 
-        private void LoadStudents()
+        private void LoadStudents(string q = null, int page = 1)
         {
             try
             {
+                lastSearchText = q ?? string.Empty;
+                currentPage = Math.Max(1, page);
+
                 string conn = DatabaseHelper.DefaultConnectionString;
                 using (var db = new DataClasses1DataContext(conn))
                 {
+                    var query = db.Students.AsQueryable();
+                    if (!string.IsNullOrWhiteSpace(lastSearchText))
+                    {
+                        string t = lastSearchText.Trim();
+                        query = query.Where(s => s.MaSV.Contains(t) || s.HoTen.Contains(t) || s.Lop.Contains(t));
+                    }
+
+                    totalRecords = query.Count();
+                    totalPages = Math.Max(1, (int)Math.Ceiling((double)totalRecords / pageSize));
+                    if (currentPage > totalPages) currentPage = totalPages;
+
+                    var pageData = query.OrderBy(s => s.MaSV).Skip((currentPage - 1) * pageSize).Take(pageSize).ToList();
+
                     dataGridView1.Rows.Clear();
-                    foreach (var s in db.Students)
+                    foreach (var s in pageData)
                     {
                         string ngay = s.NgaySinh.HasValue ? s.NgaySinh.Value.ToString("dd/MM/yyyy") : string.Empty;
                         dataGridView1.Rows.Add(s.MaSV, s.HoTen, s.GioiTinh, ngay, s.Lop);
                     }
                 }
+
+                UpdatePagingControls();
             }
             catch (Exception ex)
             {
                 // Non-fatal: show message and continue
                 MessageBox.Show("Không thể load dữ liệu sinh viên: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
+        }
+
+        private void UpdatePagingControls()
+        {
+            // update label and enable/disable buttons
+            try
+            {
+                this.label7.Text = $"Trang {currentPage}/{totalPages} |  {totalRecords} bản ghi";
+                this.button6.Enabled = currentPage > 1; // <<
+                this.button7.Enabled = currentPage > 1; // <
+                this.button8.Enabled = currentPage < totalPages; // >
+                this.button9.Enabled = currentPage < totalPages; // >>
+            }
+            catch { }
+        }
+
+        // Search button
+        private void button5_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                string q = this.textBox1.Text;
+                currentPage = 1;
+                LoadStudents(q, currentPage);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Lỗi khi tìm kiếm: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
+
+        // paging handlers
+        private void button6_Click(object sender, EventArgs e)
+        {
+            // first page
+            if (currentPage == 1) return;
+            currentPage = 1;
+            LoadStudents(lastSearchText, currentPage);
+        }
+
+        private void button7_Click(object sender, EventArgs e)
+        {
+            // previous
+            if (currentPage <= 1) return;
+            currentPage--;
+            LoadStudents(lastSearchText, currentPage);
+        }
+
+        private void button8_Click(object sender, EventArgs e)
+        {
+            // next
+            if (currentPage >= totalPages) return;
+            currentPage++;
+            LoadStudents(lastSearchText, currentPage);
+        }
+
+        private void button9_Click(object sender, EventArgs e)
+        {
+            // last
+            if (currentPage >= totalPages) return;
+            currentPage = totalPages;
+            LoadStudents(lastSearchText, currentPage);
         }
 
         // Populate form fields when a row in the grid is clicked
